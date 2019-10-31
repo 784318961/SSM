@@ -45,7 +45,7 @@
 			</map>
 		</property>
 	</bean>
-	
+	<bean></bean>
 	<!-- 配置全局异常处理 -->
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<!-- 抛出自定义异常的内容 -->
