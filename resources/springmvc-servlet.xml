@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+        
+	<!-- 对控制器进行映射 -->
+	<context:component-scan base-package="com.controller"/>
+	
+	
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>application/json;charset=UTF-8</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	<!-- 配置视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/jsp/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<!-- 配置多视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="favorParameter" value="true"></property>
+		<property name="defaultContentType" value="text/html"></property>
+		<property name="mediaTypes">
+			<map>
+				<entry key="html" value="text/html;charset=UTF-8"></entry>
+				<entry key="json" value="application/json;charset=UTF-8"></entry>
+				<entry key="xml" value="application/xml;charset=UTF-8"></entry>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 配置全局异常处理 -->
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<!-- 抛出自定义异常的内容 -->
+		<property name="exceptionAttribute" value="e"/>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="java.lang.RunTimeException">error</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- 配置静态文件映射路径 -->
+	<mvc:default-servlet-handler/>
+	
+	<!-- 配置文件上传的bean -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="5000000"/>
+		<property name="defaultEncoding" value="UTF-8"/>
+	</bean>
+	
+	<!-- 配置拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/*/sys/**"/>
+			<bean class="com.interceptor.SysInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+</beans>

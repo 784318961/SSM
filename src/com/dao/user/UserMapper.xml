@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.user.UserMapper">
+
+	<!-- 获取指定用户的全部数据 -->
+	<select id="getUser" resultType="User">
+		select * from smbms_user u
+		<where>
+			<if test="userCode!=null">
+				u.userCode=#{userCode}
+			</if>
+		</where>
+	</select>
+
+	<!-- 通过userName和roleId条件查询用户的总数 -->
+	<select id="getUserCount_dao" resultType="int">
+		select count(1) as count from smbms_user u,smbms_role r
+		<where>
+			<if test="userName!=null">
+				and u.userName like concat('%',#{userName},'%')
+			</if>
+			<if test="userRole>0">
+				and u.userRole=#{userRole}
+			</if>
+			and u.userRole=r.id
+		</where>
+	</select>
+
+	<!-- 通过userName和userRole条件查询用户的信息并分页显示 -->
+	<select id="getUserList_dao" resultMap="userList">
+		select u.*,r.roleName from smbms_user u,smbms_role r where u.userRole = r.id
+		<if test="userRole != null and userRole>0">
+			and u.userRole = #{userRole}
+		</if>
+		<if test="userName != null and userName != ''">
+			and u.userName like CONCAT('%',#{userName},'%') 
+		</if>
+		order by creationDate DESC limit #{currentPageNo},#{pageSize}
+	</select>
+
+	<!-- 映射结果集 -->
+	<resultMap type="User" id="userList">
+		<result property="userRoleName" column="roleName" />
+		
+	</resultMap>
+	
+
+	<!-- 通过id查询指定用户的信息 -->
+	<select id="getUserThis_dao" resultMap="userList">
+		select u.*,r.roleName from smbms_user u,smbms_role r where u.id=#{id} and u.userRole=r.id
+	</select>
+
+	<!-- 增加用户 -->
+	<insert id="addUser_dao" parameterType="User">
+		insert into
+		smbms_user(userCode,userName,userPassword,birthday,gender,phone,address,userRole,createdBy,creationDate,modifyBy,modifyDate,idPicPath,workPicPath)
+		values(#{userCode},#{userName},#{userPassword},#{birthday},#{gender},#{phone},#{address},#{userRole},#{createdBy},#{creationDate},#{modifyBy},#{modifyDate},#{idPicPath},#{workPicPath})
+	</insert>
+
+	<!-- 通过userCode获取用户信息 -->
+	<select id="getUserThisByCode_dao" resultType="User">
+		select * from smbms_user where userCode=#{userCode}
+	</select>
+	
+	<!-- 修改用户信息 -->
+	<update id="updateUser_dao" parameterType="User">
+		update smbms_user
+		<set>
+			<if test="userCode!=null">userCode=#{userCode},</if>
+			<if test="userName!=null">userName=#{userName},</if>
+			<if test="userPassword!=null">userPassword=#{userPassword},</if>
+			<if test="birthday!=null">birthday=#{birthday},</if>
+			<if test="gender!=null">gender=#{gender},</if>
+			<if test="phone!=null">phone=#{phone},</if>
+			<if test="address!=null">address=#{address},</if>
+			<if test="userRole!=null">userRole=#{userRole},</if>
+			<if test="createdBy!=null">createdBy=#{createdBy},</if>
+			<if test="creationDate!=null">creationDate=#{creationDate},</if>
+			<if test="modifyBy!=null">modifyBy=#{modifyBy},</if>
+			<if test="modifyDate!=null">modifyDate=#{modifyDate},</if>
+			<if test="idPicPath!=null">idPicPath=#{idPicPath},</if>
+			<if test="workPicPath!=null">workPicPath=#{workPicPath}</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<!-- 修改用户密码 -->
+	<update id="updatePassword_dao">
+		update smbms_user set userPassword=#{userPassword} where id=#{id}
+	</update>
+	
+	<!-- 删除用户 -->
+	<delete id="deleteUser_dao">
+		delete from smbms_user where id=#{id}
+	</delete>
+</mapper>

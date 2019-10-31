@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.role.RoleMapper">
+	
+	<!-- 查询角色表全部信息 -->
+	<select id="getRole" resultType="Role">
+		select * from smbms_role
+	</select>
+	
+	<!-- 通过id查询角色信息 -->
+	<select id="getRoleThis_dao" resultType="Role">
+		select * from smbms_role where id=#{id}
+	</select>
+	
+	<!-- 增加角色信息 -->
+	<insert id="addRole_dao" parameterType="Role">
+		insert into smbms_role(roleCode,roleName,createdBy,creationDate) values(#{roleCode},#{roleName},#{createdBy},#{creationDate})
+	</insert>
+	
+	<!-- 修改角色信息 -->
+	<update id="updateRole_dao"  parameterType="Role" >
+		update smbms_role 
+		<set>
+			<if test="roleCode!=null">roleCode=#{roleCode},</if>
+			<if test="roleName!=null">roleName=#{roleName},</if>
+			<if test="modifyBy!=null">modifyBy=#{modifyBy},</if>
+			<if test="modifyDate!=null">modifyDate=#{modifyDate}</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<!-- 删除角色信息 -->
+	<delete id="deleteRole_dao">
+		delete from smbms_role where id=#{id}
+	</delete>
+	
+	<!-- 验证角色唯一编码 -->
+	<select id="getRoleCode_dao" resultType="int">
+		select count(1) as count from smbms_role where roleCode=#{roleCode}
+	</select>
+</mapper>
